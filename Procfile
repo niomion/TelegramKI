@@ -1,1 +1,1 @@
-worker: python TelegramKI.py
+web: python TelegramKI.py
