@@ -4,7 +4,7 @@ import pytz
 import schedule
 import time
 import threading
-from flask import Flask, request, jsonify
+
 
 TOKEN = "7542022559:AAFpP7-ZId3x0aFon8OGGlTcnzNeZ1Jp42s"
 bot = telebot.TeleBot(TOKEN)
@@ -84,6 +84,7 @@ def get_friday_schedule(date_str):
     
     return week_type
 
+
 def generate_schedule_message(day):
     timezone = pytz.timezone("Europe/Kiev")
     today_str = datetime.now(timezone).strftime('%Y-%m-%d')
@@ -115,73 +116,51 @@ def generate_full_schedule_message():
     week_type = 'numerator' if is_numerator_week() else 'denominator'
 
     message = f"Розклад на тиждень ({week_type}):\n\n"
-    for day, schedule_for_day in schedule_data.items():
-        if day == today:
-            message += f"{day} (Today):\n"
-        else:
-            message += f"{day}:\n"
-        
-        if week_type in schedule_for_day:
-            if 'group1' in schedule_for_day[week_type]:
-                message += f"  Підгрупа 1: {schedule_for_day[week_type]['group1']}\n"
-            if 'group2' in schedule_for_day[week_type]:
-                message += f"  Підгрупа 2: {schedule_for_day[week_type]['group2']}\n"
-        message += "\n"
-    
+    for day, schedules in schedule_data.items():
+        if day == 'Friday':
+            day = get_friday_schedule(datetime.now(timezone).strftime('%Y-%m-%d'))
+        if week_type in schedules:
+            message += f"Розклад на {day}:\n"
+            if 'group1' in schedules[week_type]:
+                message += f"Підгрупа 1:\n{ schedules[week_type]['group1']}\n"
+            if 'group2' in schedules[week_type]:
+                message += f"\nПідгрупа 2:\n{ schedules[week_type]['group2']}\n"
+            message += "\n"
     return message
 
-@bot.message_handler(commands=['start'])
-def start(message):
-    bot.send_message(message.chat.id, "Привіт! Я бот, який допоможе тобі зі шкільним розкладом.")
-
-@bot.message_handler(commands=['test'])
-def test(message):
-    bot.send_message(message.chat.id, "Hello World!")
-
-@bot.message_handler(commands=['today'])
-def today(message):
+def send_daily_schedule():
     timezone = pytz.timezone("Europe/Kiev")
     today = datetime.now(timezone).strftime('%A')
-    bot.send_message(message.chat.id, generate_schedule_message(today))
+    
+    schedule_message = generate_schedule_message(today)
+    
+    chat_id = '-1002157187523' 
+    bot.send_message(chat_id, schedule_message)
 
-@bot.message_handler(commands=['week'])
-def week(message):
-    bot.send_message(message.chat.id, generate_full_schedule_message())
+schedule.every().monday.at("08:00").do(send_daily_schedule)
+schedule.every().tuesday.at("08:00").do(send_daily_schedule)
+schedule.every().wednesday.at("08:00").do(send_daily_schedule)
+schedule.every().thursday.at("08:00").do(send_daily_schedule)
+schedule.every().friday.at("08:00").do(send_daily_schedule)
 
-def run_bot():
-    bot.polling(none_stop=True)
-
-def schedule_tasks():
+def run_scheduler():
     while True:
         schedule.run_pending()
         time.sleep(1)
 
-# Flask server для фіктивного веб-сервісу
-app = Flask(__name__)
+scheduler_thread = threading.Thread(target=run_scheduler)
+scheduler_thread.start()
 
-@app.route('/schedule', methods=['GET'])
-def get_schedule():
-    fake_schedule = {
-        "Monday": "Math, Physics",
-        "Tuesday": "Programming, Chemistry",
-        "Wednesday": "Literature, History",
-        "Thursday": "PE, Biology",
-        "Friday": "Math, Art"
-    }
-    return jsonify(fake_schedule)
+@bot.message_handler(commands=['пари'])
+def send_welcome(message):
+    timezone = pytz.timezone("Europe/Kiev")
+    today = datetime.now(timezone).strftime('%A')
+    schedule_message = generate_schedule_message(today)
+    bot.reply_to(message, schedule_message)
 
-@app.route('/schedule', methods=['POST'])
-def post_schedule():
-    data = request.json
-    return jsonify({"status": "Schedule received", "data": data}), 201
+@bot.message_handler(commands=['розклад'])
+def send_full_schedule(message):
+    schedule_message = generate_full_schedule_message()
+    bot.reply_to(message, schedule_message)
 
-def run_flask():
-    app.run(debug=True, port=5000)
-
-# Запуск бота та Flask серверу у різних потоках
-if __name__ == '__main__':
-    bot_thread = threading.Thread(target=run_bot)
-    flask_thread = threading.Thread(target=run_flask)
-
-    bot_thread.start()
-    flask_thread.start()
+bot.polling()
