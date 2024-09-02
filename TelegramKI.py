@@ -137,11 +137,12 @@ def send_daily_schedule():
     chat_id = '-1002157187523' 
     bot.send_message(chat_id, schedule_message)
 
-schedule.every().monday.at("08:00").do(send_daily_schedule)
-schedule.every().tuesday.at("08:00").do(send_daily_schedule)
-schedule.every().wednesday.at("08:00").do(send_daily_schedule)
-schedule.every().thursday.at("08:00").do(send_daily_schedule)
-schedule.every().friday.at("08:00").do(send_daily_schedule)
+schedule.every().monday.at("05:00").do(send_daily_schedule)
+schedule.every().monday.at("14:35").do(send_daily_schedule)
+schedule.every().tuesday.at("05:00").do(send_daily_schedule)
+schedule.every().wednesday.at("05:00").do(send_daily_schedule)
+schedule.every().thursday.at("05:00").do(send_daily_schedule)
+schedule.every().friday.at("05:00").do(send_daily_schedule)
 
 def run_scheduler():
     while True:
