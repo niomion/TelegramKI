@@ -181,14 +181,14 @@ def run_scheduler():
 scheduler_thread = threading.Thread(target=run_scheduler)
 scheduler_thread.start()
 
-@bot.message_handler(commands=['пари'])
+@bot.message_handler(commands=['class'])
 def send_welcome(message):
     timezone = pytz.timezone("Europe/Kiev")
     today = datetime.now(timezone).strftime('%A')
     schedule_message = generate_schedule_message(today)
     bot.reply_to(message, schedule_message, parse_mode='HTML')
 
-@bot.message_handler(commands=['розклад'])
+@bot.message_handler(commands=['schedule'])
 def send_full_schedule(message):
     schedule_message = generate_full_schedule_message()
     bot.reply_to(message, schedule_message, parse_mode='HTML')
