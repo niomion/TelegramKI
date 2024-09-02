@@ -107,13 +107,13 @@ def generate_schedule_message(day):
     elif day == 'Saturday': dayukr = 'Суботу'
     elif day == 'Sunday': dayukr = 'Неділю'
 
-    message = f"💬*Розклад на {dayukr} ({week_typeukr}):*\n\n"
+    message = f"💬 <b>Розклад на {dayukr} ({week_typeukr}):</b>\n\n"
     
     if week_type in day_schedule:
         if 'group1' in day_schedule[week_type]:
-            message += f"📍*Підгрупа 1:*\n{day_schedule[week_type]['group1']}\n"
+            message += f"📍<b>Підгрупа 1:</b>\n{day_schedule[week_type]['group1']}\n"
         if 'group2' in day_schedule[week_type]:
-            message += f"\n📍*Підгрупа 2:*\n{day_schedule[week_type]['group2']}\n"
+            message += f"\n📍<b>Підгрупа 2:</b>\n{day_schedule[week_type]['group2']}\n"
     else:
         message = "Сьогодні немає занять."
 
@@ -172,11 +172,11 @@ def send_welcome(message):
     timezone = pytz.timezone("Europe/Kiev")
     today = datetime.now(timezone).strftime('%A')
     schedule_message = generate_schedule_message(today)
-    bot.reply_to(message, schedule_message)
+    bot.reply_to(message, schedule_message, parse_mode='HTML')
 
 @bot.message_handler(commands=['розклад'])
 def send_full_schedule(message):
     schedule_message = generate_full_schedule_message()
-    bot.reply_to(message, schedule_message)
+    bot.reply_to(message, schedule_message, parse_mode='HTML')
 
 bot.polling()
