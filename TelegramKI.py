@@ -107,13 +107,13 @@ def generate_schedule_message(day):
     elif day == 'Saturday': dayukr = 'Суботу'
     elif day == 'Sunday': dayukr = 'Неділю'
 
-    message = f"💬 <b>Розклад на {dayukr} ({week_typeukr}):</b>\n\n"
+    message = f"💬*Розклад на {dayukr} ({week_typeukr}):*\n\n"
     
     if week_type in day_schedule:
         if 'group1' in day_schedule[week_type]:
-            message += f"📍<b>Підгрупа 1:</b>\n{day_schedule[week_type]['group1']}\n"
+            message += f"📍*Підгрупа 1:*\n{day_schedule[week_type]['group1']}\n"
         if 'group2' in day_schedule[week_type]:
-            message += f"\n📍<b>Підгрупа 2:</b>\n{day_schedule[week_type]['group2']}\n"
+            message += f"\n📍*Підгрупа 2:*\n{day_schedule[week_type]['group2']}\n"
     else:
         message = "Сьогодні немає занять."
 
