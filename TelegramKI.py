@@ -121,28 +121,35 @@ def generate_schedule_message(day):
 
 def generate_full_schedule_message():
     timezone = pytz.timezone("Europe/Kiev")
-    today = datetime.now(timezone).strftime('%A')
     week_type = 'numerator' if is_numerator_week() else 'denominator'
     week_typeukr = 'Чисельник' if week_type == 'numerator' else 'Знаменник'
-    if day == 'Monday': dayukr = 'Понеділок'
-    elif day == 'Tuesday': dayukr = 'Вівторок'
-    elif day == 'Wednesday': dayukr = 'Середу'
-    elif day == 'Thursday': dayukr = 'Четвер'
-    elif day == 'Friday':dayukr = 'П’ятницю'
-    elif day == 'Saturday': dayukr = 'Суботу'
-    elif day == 'Sunday': dayukr = 'Неділю'
-    message = f"Розклад на тиждень ({week_typeukr}):\n\n"
+    message = f"💬 <b>Розклад на тиждень ({week_typeukr}):</b>\n\n"
     for day, schedules in schedule_data.items():
+        if day == 'Monday':
+            dayukr = 'Понеділок'
+        elif day == 'Tuesday':
+            dayukr = 'Вівторок'
+        elif day == 'Wednesday':
+            dayukr = 'Середу'
+        elif day == 'Thursday':
+            dayukr = 'Четвер'
+        elif day == 'Friday':
+            dayukr = 'П’ятницю'
+        elif day == 'Saturday':
+            dayukr = 'Суботу'
+        elif day == 'Sunday':
+            dayukr = 'Неділю'
         if day == 'Friday':
             day = get_friday_schedule(datetime.now(timezone).strftime('%Y-%m-%d'))
         if week_type in schedules:
-            message += f"Розклад на {dayukr}:\n"
+            message += f"<b>🗓 Розклад на {dayukr}:</b>\n"
             if 'group1' in schedules[week_type]:
-                message += f"Підгрупа 1:\n{ schedules[week_type]['group1']}\n"
+                message += f"📍<b>Підгрупа 1:</b>\n{schedules[week_type]['group1']}\n"
             if 'group2' in schedules[week_type]:
-                message += f"\nПідгрупа 2:\n{ schedules[week_type]['group2']}\n"
+                message += f"\n📍<b>Підгрупа 2:</b>\n{schedules[week_type]['group2']}\n"
             message += "\n"
     return message
+
 
 def send_daily_schedule():
     timezone = pytz.timezone("Europe/Kiev")
@@ -151,7 +158,7 @@ def send_daily_schedule():
     schedule_message = generate_schedule_message(today)
     
     chat_id = '-1002157187523' 
-    bot.send_message(chat_id, schedule_message)
+    bot.send_message(chat_id, schedule_message, parse_mode='HTML')
 
 schedule.every().monday.at("05:00").do(send_daily_schedule)
 schedule.every().tuesday.at("05:00").do(send_daily_schedule)
