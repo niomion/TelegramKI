@@ -14,6 +14,8 @@ commands = [
     BotCommand(command="/розклад", description="Отримати повний розклад на тиждень")
 ]
 
+bot.set_my_commands(commands)
+
 schedule_data = {
     'Monday': {
         'numerator': {
@@ -190,5 +192,12 @@ def send_welcome(message):
 def send_full_schedule(message):
     schedule_message = generate_full_schedule_message()
     bot.reply_to(message, schedule_message, parse_mode='HTML')
+
+target_bot_id = 1264548383
+allowed_keywords = ["топ", "Топ", "топе", "Топе"]
+@bot.message_handler(func=lambda message: message.from_user.id == target_bot_id)
+def check_and_delete_ad(message):
+    if not any(keyword in message.text.lower() for keyword in allowed_keywords):
+        bot.delete_message(message.chat.id, message.message_id)
 
 bot.polling()
