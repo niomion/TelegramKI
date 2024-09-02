@@ -107,13 +107,13 @@ def generate_schedule_message(day):
     elif day == 'Saturday': dayukr = 'Суботу'
     elif day == 'Sunday': dayukr = 'Неділю'
 
-    message = f"Розклад на {dayukr} ({week_typeukr}):\n\n"
+    message = f"💬 <b>Розклад на {dayukr} ({week_typeukr}):</b>\n\n"
     
     if week_type in day_schedule:
         if 'group1' in day_schedule[week_type]:
-            message += f"Підгрупа 1:\n{day_schedule[week_type]['group1']}\n"
+            message += f"📍<b>Підгрупа 1:</b>\n{day_schedule[week_type]['group1']}\n"
         if 'group2' in day_schedule[week_type]:
-            message += f"\nПідгрупа 2:\n{day_schedule[week_type]['group2']}\n"
+            message += f"\n📍<b>Підгрупа 2:</b>\n{day_schedule[week_type]['group2']}\n"
     else:
         message = "Сьогодні немає занять."
 
@@ -123,13 +123,20 @@ def generate_full_schedule_message():
     timezone = pytz.timezone("Europe/Kiev")
     today = datetime.now(timezone).strftime('%A')
     week_type = 'numerator' if is_numerator_week() else 'denominator'
-
-    message = f"Розклад на тиждень ({week_type}):\n\n"
+    week_typeukr = 'Чисельник' if week_type == 'numerator' else 'Знаменник'
+    if day == 'Monday': dayukr = 'Понеділок'
+    elif day == 'Tuesday': dayukr = 'Вівторок'
+    elif day == 'Wednesday': dayukr = 'Середу'
+    elif day == 'Thursday': dayukr = 'Четвер'
+    elif day == 'Friday':dayukr = 'П’ятницю'
+    elif day == 'Saturday': dayukr = 'Суботу'
+    elif day == 'Sunday': dayukr = 'Неділю'
+    message = f"Розклад на тиждень ({week_typeukr}):\n\n"
     for day, schedules in schedule_data.items():
         if day == 'Friday':
             day = get_friday_schedule(datetime.now(timezone).strftime('%Y-%m-%d'))
         if week_type in schedules:
-            message += f"Розклад на {day}:\n"
+            message += f"Розклад на {dayukr}:\n"
             if 'group1' in schedules[week_type]:
                 message += f"Підгрупа 1:\n{ schedules[week_type]['group1']}\n"
             if 'group2' in schedules[week_type]:
@@ -147,7 +154,6 @@ def send_daily_schedule():
     bot.send_message(chat_id, schedule_message)
 
 schedule.every().monday.at("05:00").do(send_daily_schedule)
-schedule.every().monday.at("15:00").do(send_daily_schedule)
 schedule.every().tuesday.at("05:00").do(send_daily_schedule)
 schedule.every().wednesday.at("05:00").do(send_daily_schedule)
 schedule.every().thursday.at("05:00").do(send_daily_schedule)
