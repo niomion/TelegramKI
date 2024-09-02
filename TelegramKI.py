@@ -4,10 +4,15 @@ import pytz
 import schedule
 import time
 import threading
-
+from telebot.types import BotCommand
 
 TOKEN = "7542022559:AAFpP7-ZId3x0aFon8OGGlTcnzNeZ1Jp42s"
 bot = telebot.TeleBot(TOKEN)
+
+commands = [
+    BotCommand(command="/пари", description="Дізнатись пари на сьогодні"),
+    BotCommand(command="/розклад", description="Отримати повний розклад на тиждень")
+]
 
 schedule_data = {
     'Monday': {
@@ -142,7 +147,7 @@ def generate_full_schedule_message():
         if day == 'Friday':
             day = get_friday_schedule(datetime.now(timezone).strftime('%Y-%m-%d'))
         if week_type in schedules:
-            message += f"<b>🗓 Розклад на {dayukr}:</b>\n"
+            message += f"<b>🗓 Розклад на {dayukr}:</b>\n\n"
             if 'group1' in schedules[week_type]:
                 message += f"📍<b>Підгрупа 1:</b>\n{schedules[week_type]['group1']}\n"
             if 'group2' in schedules[week_type]:
@@ -157,7 +162,7 @@ def send_daily_schedule():
     
     schedule_message = generate_schedule_message(today)
     
-    chat_id = '-1002157187523' 
+    chat_id = '-1002157187523', '-1001959771080'
     bot.send_message(chat_id, schedule_message, parse_mode='HTML')
 
 schedule.every().monday.at("05:00").do(send_daily_schedule)
