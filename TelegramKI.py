@@ -164,7 +164,7 @@ def send_daily_schedule():
     
     schedule_message = generate_schedule_message(today)
     
-    chat_id = '-1002157187523', '-1001959771080'
+    chat_id = '-1001959771080'
     bot.send_message(chat_id, schedule_message, parse_mode='HTML')
 
 schedule.every().monday.at("05:00").do(send_daily_schedule)
