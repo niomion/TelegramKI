@@ -1,5 +1,5 @@
 import telebot
-from datetime import datetime
+from datetime import datetime, timedelta
 import pytz
 import schedule
 import time
@@ -185,7 +185,7 @@ schedule.every().tuesday.at("17:00").do(send_tomorrow_schedule)
 schedule.every().wednesday.at("17:00").do(send_tomorrow_schedule)
 schedule.every().thursday.at("17:00").do(send_tomorrow_schedule)
 schedule.every().sunday.at("17:00").do(send_tomorrow_schedule)
-schedule.every().day.at("13:30").do(send_tomorrow_schedule)
+schedule.every().day.at("13:40").do(send_tomorrow_schedule)
 
 def run_scheduler():
     while True:
@@ -198,8 +198,14 @@ scheduler_thread.start()
 @bot.message_handler(commands=['class'])
 def send_welcome(message):
     timezone = pytz.timezone("Europe/Kiev")
-    today = datetime.now(timezone).strftime('%A')
-    schedule_message = generate_schedule_message(today)
+    current_time = datetime.now(timezone)
+    today = current_time.strftime('%A')
+    if current_time.hour < 20:
+        schedule_message = generate_schedule_message(today)
+    else:
+        tomorrow = (current_time + timedelta(days=1)).strftime('%A')
+        schedule_message = generate_schedule_message(tomorrow)
+    
     bot.reply_to(message, schedule_message, parse_mode='HTML')
 
 @bot.message_handler(commands=['schedule'])
