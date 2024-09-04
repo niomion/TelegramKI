@@ -157,6 +157,14 @@ def generate_full_schedule_message():
             message += "\n"
     return message
 
+def send_tomorrow_schedule():
+    timezone = pytz.timezone("Europe/Kiev")
+    tomorrow = (datetime.now(timezone) + timedelta(days=1)).strftime('%A')
+    
+    schedule_message = generate_schedule_message(tomorrow)
+    
+    chat_id = '-1001959771080'  # Замініть на ваш чат ID
+    bot.send_message(chat_id, schedule_message, parse_mode='HTML')
 
 def send_daily_schedule():
     timezone = pytz.timezone("Europe/Kiev")
@@ -167,11 +175,17 @@ def send_daily_schedule():
     chat_id = '-1001959771080'
     bot.send_message(chat_id, schedule_message, parse_mode='HTML')
 
-schedule.every().monday.at("05:00").do(send_daily_schedule)
-schedule.every().tuesday.at("05:00").do(send_daily_schedule)
-schedule.every().wednesday.at("05:00").do(send_daily_schedule)
-schedule.every().thursday.at("05:00").do(send_daily_schedule)
-schedule.every().friday.at("05:00").do(send_daily_schedule)
+schedule.every().monday.at("03:00").do(send_daily_schedule)
+schedule.every().tuesday.at("03:00").do(send_daily_schedule)
+schedule.every().wednesday.at("03:00").do(send_daily_schedule)
+schedule.every().thursday.at("03:00").do(send_daily_schedule)
+schedule.every().friday.at("03:00").do(send_daily_schedule)
+schedule.every().monday.at("17:00").do(send_tomorrow_schedule)
+schedule.every().tuesday.at("17:00").do(send_tomorrow_schedule)
+schedule.every().wednesday.at("17:00").do(send_tomorrow_schedule)
+schedule.every().thursday.at("17:00").do(send_tomorrow_schedule)
+schedule.every().sunday.at("17:00").do(send_tomorrow_schedule)
+schedule.every().sunday.at("13:27").do(send_tomorrow_schedule)
 
 def run_scheduler():
     while True:
@@ -192,12 +206,5 @@ def send_welcome(message):
 def send_full_schedule(message):
     schedule_message = generate_full_schedule_message()
     bot.reply_to(message, schedule_message, parse_mode='HTML')
-
-target_bot_id = 1264548383
-allowed_keywords = ["топ", "Топ", "топе", "Топе"]
-@bot.message_handler(func=lambda message: message.from_user.id == target_bot_id)
-def check_and_delete_ad(message):
-    if not any(keyword in message.text.lower() for keyword in allowed_keywords):
-        bot.delete_message(message.chat.id, message.message_id)
 
 bot.polling()
