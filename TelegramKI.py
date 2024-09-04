@@ -185,7 +185,7 @@ schedule.every().tuesday.at("17:00").do(send_tomorrow_schedule)
 schedule.every().wednesday.at("17:00").do(send_tomorrow_schedule)
 schedule.every().thursday.at("17:00").do(send_tomorrow_schedule)
 schedule.every().sunday.at("17:00").do(send_tomorrow_schedule)
-schedule.every().sunday.at("13:27").do(send_tomorrow_schedule)
+schedule.every().day.at("13:30").do(send_tomorrow_schedule)
 
 def run_scheduler():
     while True:
