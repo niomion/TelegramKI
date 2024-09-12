@@ -6,7 +6,7 @@ import time
 import threading
 from telebot.types import BotCommand
 
-TOKEN
+TOKEN = "7542022559:AAFpP7-ZId3x0aFon8OGGlTcnzNeZ1Jp42s"
 bot = telebot.TeleBot(TOKEN)
 
 commands = [
